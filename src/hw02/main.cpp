@@ -2,15 +2,6 @@
 using namespace std;
 
 // add your code here
-void drawLine(int n, char sym = '*')
-{
-    while (n > 0)
-    {
-        cout << sym;
-        n--;
-    }
-    cout << endl;
-}
 
 // ==============================================
 // -----vv----- 不得修改『以下』的程式 -----vv-----
