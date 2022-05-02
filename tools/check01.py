@@ -3,14 +3,18 @@ import sys
 import os
 import subprocess
 import re
+import random
+
 
 def expected():
-    return "","Hello STUST!"
+    n = random.randint(3, 10)
+    s = "C/C++ is one of the most important computer languages for EECS students.\n"
+    return f"{n}", s*n
 
 
 def cleanup(s):
     r = s.strip()
-    r = [line.replace(' ', '') for line in r.split("\n")]
+    r = [line.strip() for line in r.split("\n")]
     return r
 
 
@@ -23,18 +27,21 @@ def failed(c, e):
 def test01(c, e):
     chk = cleanup(c)
     exp = cleanup(e)
-    if chk[0] != exp[0]:
-        failed(c, e)
+    for a, b in zip(chk, exp):
+        if a != b:
+            failed(c, e)
     return c
 
 
-def execMain(cmd,dat=""):
-    p = subprocess.Popen(["node",cmd],
+def execMain(cmd, dat=""):
+    dat = dat.encode('utf-8')
+    p = subprocess.Popen([cmd,],
                          shell=False,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE
                          )
+    p.stdin.write(dat)
     output, error = p.communicate()
     output = output.decode('utf-8')
     p.stdin.close()
@@ -42,10 +49,13 @@ def execMain(cmd,dat=""):
 
 
 def main():
-    global expected
+    root = "./src/hw01"
+    if sys.platform in ["win32"]:
+        root = "."
     # cwd = os.path.abspath(os.getcwd())
-    dat, exp = expected()
-    ret = test01(execMain('./src/lab01/main.js',dat), exp)
+    for i in range(10):
+        dat, exp = expected()
+        ret = test01(execMain(f'{root}/main', dat), exp)
     print("測試通過!")
     print(f"\n{ret}")
     exit(0)

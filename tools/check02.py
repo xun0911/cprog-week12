@@ -3,20 +3,24 @@ import sys
 import os
 import subprocess
 import re
+import random
+
 
 def expected():
-    exp = '''
-    gTime = 0,10,20,30,40,50,60,70,80,90,100
-    gT1   = 125,106,184,53,31,168,183,69,199,102,50
-    gT2   = 161,70,189,66,66,192,54,42,106,37,97
-    gMemo = NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-    '''
-    return "", exp
+    n = random.randint(1, 10)
+    s = "*"*20+"\n"
+    sym = "*"
+    if n % 2 == 0:
+        sym = "#"
+    for i in range(1, n+1):
+        s += sym*i+"\n"
+    s += "*"*20+"\n"
+    return f"{n}", s
 
 
 def cleanup(s):
     r = s.strip()
-    r = [line.replace(' ', '') for line in r.split("\n")]
+    r = [line.strip() for line in r.split("\n")]
     return r
 
 
@@ -29,21 +33,21 @@ def failed(c, e):
 def test01(c, e):
     chk = cleanup(c)
     exp = cleanup(e)
-    if chk[0] != exp[0]:
-        failed(c, e)
-    if chk[3] != exp[3]:
-        failed(c, e)
+    for a, b in zip(chk, exp):
+        if a != b:
+            failed(c, e)
     return c
 
 
-def execMain(cmd,dat=""):
-    p = subprocess.Popen(["node",cmd],
+def execMain(cmd, dat=""):
+    dat = dat.encode('utf-8')
+    p = subprocess.Popen([cmd, ],
                          shell=False,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE
                          )
-    p.stdin.write(b"100 10")
+    p.stdin.write(dat)
     output, error = p.communicate()
     output = output.decode('utf-8')
     p.stdin.close()
@@ -51,9 +55,13 @@ def execMain(cmd,dat=""):
 
 
 def main():
-     # cwd = os.path.abspath(os.getcwd())
-    dat, exp = expected()
-    ret = test01(execMain('./src/lab02/main.js',dat), exp)
+    root = "./src/hw02"
+    if sys.platform in ["win32"]:
+        root = "."
+    # cwd = os.path.abspath(os.getcwd())
+    for i in range(10):
+        dat, exp = expected()
+        ret = test01(execMain(f'{root}/main', dat), exp)
     print("測試通過!")
     print(f"\n{ret}")
     exit(0)

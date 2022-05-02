@@ -1,21 +1,39 @@
 from time import sleep
-import sys, os
+import sys
+import os
 import subprocess
-import re, random
+import re
+from random import randint
+
+
+def dump(dat, wd=5, col=5):
+    s = ""
+    cnt = 0
+    for v in dat:
+        s += f"{v:{wd}}"
+        cnt += 1
+        if cnt % col == 0:
+            s += "\n"
+    return s
 
 
 def expected():
-    dat = [random.randint(1,100) for i in range(10)]
-    cdat = ",".join([str(s) for s in dat])
-    sdat = " ".join([str(s) for s in dat])    
-    s = f"sum({cdat}) = {sum(dat)}"
-    return sdat , s
+    dat = [randint(1, 100) for _ in range(randint(10, 20))]
+    s = dump(dat)
+    s += f"\n{dump(dat,wd=10)}"
+    s += f"\n{dump(dat,10,3)}"
+    sdat = " ".join([str(_) for _ in dat])
+    return sdat, s
 
 
 def cleanup(s):
     r = s.strip()
-    r = [line.replace(' ', '') for line in r.split("\n")]
-    return r
+    r = [line.strip() for line in r.split("\n")]
+    noblk = []
+    for l in r:
+        if len(l) != 0:
+            noblk.append(l)
+    return noblk
 
 
 def failed(c, e):
@@ -27,13 +45,15 @@ def failed(c, e):
 def test01(c, e):
     chk = cleanup(c)
     exp = cleanup(e)
-    if chk[0] != exp[0]:
-        failed(c, e)
+    for a, b in zip(chk, exp):
+        if a != b:
+            failed(c, e)
     return c
 
-def execMain(cmd,dat=""):
-    dat = dat.encode('utf-8')    
-    p = subprocess.Popen(["node",cmd],
+
+def execMain(cmd, dat=""):
+    dat = dat.encode('utf-8')
+    p = subprocess.Popen([cmd, ],
                          shell=False,
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
@@ -47,14 +67,16 @@ def execMain(cmd,dat=""):
 
 
 def main():
-    global expected
+    root = "./src/hw03"
+    if sys.platform in ["win32"]:
+        root = "."
     # cwd = os.path.abspath(os.getcwd())
-    dat, exp = expected()
-    ret = test01(execMain('./src/lab03/main.js',dat), exp)
+    for i in range(10):
+        dat, exp = expected()
+        ret = test01(execMain(f'{root}/main', dat), exp)
     print("測試通過!")
     print(f"\n{ret}")
     exit(0)
-
 
 
 if __name__ == "__main__":

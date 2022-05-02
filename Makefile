@@ -16,6 +16,3 @@ lab03: node
 lab04: node
 	python ./$(dir_check)/check04.py
 
-lab05: node
-	python ./$(dir_check)/check05.py
-
