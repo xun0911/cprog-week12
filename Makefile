@@ -1,18 +1,28 @@
 dir_hw = src
 dir_check = tools
 
-node:
-	npm install
+hw01:
+	g++ -std=c++11 $(dir_hw)/$@/main.cpp -o $(dir_hw)/$@/main
 
-lab01: node
+hw02:
+	g++ -std=c++11 $(dir_hw)/$@/main.cpp -o $(dir_hw)/$@/main
+
+hw03:
+	g++ -std=c++11 $(dir_hw)/$@/main.cpp -o $(dir_hw)/$@/main
+
+hw04:
+	g++ -std=c++11 $(dir_hw)/$@/main.cpp -o $(dir_hw)/$@/main
+
+
+hw01c: hw01 
 	python ./$(dir_check)/check01.py
 
-lab02: node
+hw02c: hw02
 	python ./$(dir_check)/check02.py
 
-lab03: node
+hw03c: hw03
 	python ./$(dir_check)/check03.py
 
-lab04: node
+hw04c: hw04
 	python ./$(dir_check)/check04.py
 
