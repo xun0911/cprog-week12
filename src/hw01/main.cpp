@@ -15,7 +15,10 @@ int main()
     int n;
     cin >> n;
 
-    // add your code here
+    while(n>0) {
+        myFunction();
+        n--;
+    }
 
     return 0;
 }
